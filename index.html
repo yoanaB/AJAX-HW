@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AJAX HW</title>
+    <script type = text/javascript src = "Ajax.js"></script>
+</head>
+<body>
+    <div id = 'container'></div>
+
+</body>
+<script type = text/javascript>
+
+    function callback(xhr){
+        var container = document.getElementById('container');
+        container.innerHTML = "";
+        var people = JSON.parse(xhr.responseText);
+        var list = document.createElement('ul');
+        var tempList = document.createElement('ul');
+        for(var i = 0; i < people.length; i++){
+            var item = document.createElement('li');
+            item.setAttribute("class", "name");
+            item.innerHTML = "<img src = \"" + people[i].picture + "\" width = \"300px\" height = \"200px\" />"  +
+                             "<a href = # >" +  people[i].name + "</a>";
+            list.appendChild(item);
+        }
+        container.appendChild(list);
+    }
+
+   function callback2(xhr){
+        var names = document.getElementsByClassName("name");
+
+        var info = JSON.parse(xhr.responseText);
+        for(var i = 0; i < names.length; i++){
+            names[i].setAttribute("data", i);
+            names[i].setAttribute("data-checked", "false");
+
+            names[i].addEventListener('click', function(){
+                if(this.getAttribute("data-checked") === "false"){
+                    var container = document.createElement('ul');
+                    var index = this.getAttribute("data");
+                    var job = document.createElement('li');
+                    job.innerHTML = info[index].job;
+                    container.appendChild(job);
+                    var dateOfBirth = document.createElement('li');
+                    dateOfBirth.innerHTML = info[index].dateOfBirth;
+                    container.appendChild(dateOfBirth);
+                    var gender = document.createElement('li');
+                    gender.innerHTML = info[index].gender;
+                    container.appendChild(gender);
+                    this.appendChild(container);
+                    this.setAttribute("data-checked", "true");
+                    window.sessionStorage.myValue = container;
+                    setTimeout(function(){
+                        window.sessionStorage.removeItem('myValue');
+                        //this.setAttribute("data-checked", "false");
+                    }, 30000);
+                }
+            }, false);
+
+        }
+
+    }
+    makeRequest('POST', 'serveer.php', {}, true, callback);
+    makeRequest('POST', 'serveer.php', {}, true, callback2);
+
+</script>
+</html>
